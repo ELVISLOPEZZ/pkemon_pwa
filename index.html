@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="theme-color" content="#ef5350">
+    <meta name="description" content="Explora los 151 Pokémon originales, consulta sus estadísticas, tipos y evoluciones en tu Pokédex PWA.">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <title>Pokémon | Pokédex</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./images/icons/icon-192x192.png">
+</head>
+
+<body>
+    <main>
+
+<nav class="pokemon-nav">
+    <a class="nav-logo" href="./index.html" aria-label="Inicio Pokémon">
+        <img src="./images/icon/pokemon2.png" alt="Logo Pokémon">
+    </a>
+</nav>
+
+        <header class="hero">
+            <h2>Explora el mundo Pokémon</h2>
+            <p>Datos en tiempo real y disponible sin conexión.</p>
+        </header>
+
+        <div id="pokemon-container" class="container">
+            <p class="loading">Cargando Pokémon...</p>
+        </div>
+    </main>
+
+    <script src="./javascript/app.js"></script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./servicesworker.js")
+                    .then((registration) => {
+                        console.log(
+                            "Pokédex PWA registrada correctamente:",
+                            registration.scope
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "Error al registrar la PWA:",
+                            error
+                        );
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

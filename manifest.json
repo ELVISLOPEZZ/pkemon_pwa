@@ -1,0 +1,27 @@
+
+{
+    "id": "./",
+    "name": "Pokédex PWA",
+    "short_name": "Pokédex",
+    "description": "Consulta los 151 Pokémon originales, sus estadísticas, tipos y evoluciones.",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f0f2f5",
+    "theme_color": "#e53935",
+    "icons": [
+        {
+            "src": "./images/icon/images.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./images/icon/images.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

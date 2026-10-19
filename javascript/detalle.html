@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Detalle Pokémon</title>
+</head>
+
+<body>
+    <main class="official-detail-container">
+
+        <nav class="official-nav">
+            <h1>Pokédex Oficial</h1>
+            <a href="../index.html" class="btn-volver">← Volver</a>
+        </nav>
+
+        <div class="official-card">
+
+            <!-- Encabezado con nombre y número -->
+            <div class="card-header-title">
+                <h2 id="detail-title">Cargando...</h2>
+                <span id="detail-id" class="pokemon-num">N.º ----</span>
+            </div>
+
+            <div class="main-grid">
+
+                <!-- Columna izquierda: imagen y puntos base -->
+                <div class="image-column">
+
+                    <div class="official-img-box">
+                        <img
+                            id="detail-img"
+                            src=""
+                            alt="Pokémon"
+                            class="official-img"
+                        >
+                    </div>
+
+                    <!-- Puntos base -->
+                    <div class="base-stats-box">
+                        <h4>Puntos de base</h4>
+
+                        <div class="stats-bars-grid">
+
+                            <!-- PS -->
+                            <div class="stat-col">
+                                <span id="num-hp" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-hp" class="bar-fill"></div>
+                                </div>
+                                <span>PS</span>
+                            </div>
+
+                            <!-- Ataque -->
+                            <div class="stat-col">
+                                <span id="num-attack" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-attack" class="bar-fill"></div>
+                                </div>
+                                <span>Ataque</span>
+                            </div>
+
+                            <!-- Defensa -->
+                            <div class="stat-col">
+                                <span id="num-defense" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-defense" class="bar-fill"></div>
+                                </div>
+                                <span>Defensa</span>
+                            </div>
+
+                            <!-- Ataque especial -->
+                            <div class="stat-col">
+                                <span id="num-sp-atk" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-sp-atk" class="bar-fill"></div>
+                                </div>
+                                <span>At. Esp.</span>
+                            </div>
+
+                            <!-- Defensa especial -->
+                            <div class="stat-col">
+                                <span id="num-sp-def" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-sp-def" class="bar-fill"></div>
+                                </div>
+                                <span>Def. Esp.</span>
+                            </div>
+
+                            <!-- Velocidad -->
+                            <div class="stat-col">
+                                <span id="num-speed" class="stat-number">0</span>
+                                <div class="bar-container">
+                                    <div id="bar-speed" class="bar-fill"></div>
+                                </div>
+                                <span>Velocidad</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha: información y descripción -->
+                <div class="info-column">
+
+                    <div class="blue-info-panel">
+
+                        <div class="info-row">
+                            <div class="info-group">
+                                <span class="label">Altura</span>
+                                <span id="detail-height" class="value">--</span>
+                            </div>
+
+                            <div class="info-group">
+                                <span class="label">Categoría</span>
+                                <span id="detail-category" class="value">Desconocida</span>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-group">
+                                <span class="label">Peso</span>
+                                <span id="detail-weight" class="value">--</span>
+                            </div>
+
+                            <div class="info-group">
+                                <span class="label">Habilidad</span>
+                                <span id="detail-ability" class="value">--</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Tipos -->
+                    <div class="section-block">
+                        <h3>Tipo</h3>
+                        <div id="detail-types" class="types-row"></div>
+                    </div>
+
+                    <!-- Biografía -->
+                    <div class="section-block description-box">
+                        <h3>Biografía</h3>
+                        <p id="detail-description">
+                            Cargando descripción oficial...
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Evoluciones -->
+            <div class="evolution-section">
+                <h3>Evoluciones</h3>
+
+                <div id="evolution-container" class="evolution-grid">
+                    <p style="color: #666; text-align: center;">
+                        Cargando evoluciones...
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="./detalle.js"></script>
+</body>
+</html>

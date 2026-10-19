@@ -1,0 +1,1480 @@
+
+/* =========================================
+   1. VARIABLES Y CONFIGURACIÓN GENERAL
+========================================= */
+
+:root {
+    --primary: #e53935;
+    --primary-dark: #b71c1c;
+    --primary-light: #ffebee;
+    --blue: #36a9d6;
+    --blue-dark: #1685b0;
+    --background: #f2f5fa;
+    --surface: #ffffff;
+    --text: #252b36;
+    --muted: #778195;
+    --border: #e3e8f0;
+    --dark-panel: #252b35;
+    --radius: 18px;
+    --shadow: 0 5px 18px rgba(35, 45, 65, 0.07);
+    --shadow-hover: 0 12px 28px rgba(35, 45, 65, 0.14);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 20px;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at top left, #e5efff 0, transparent 35%),
+        var(--background);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a,
+.card,
+.evo-card,
+.evolution-item {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    color: inherit;
+}
+
+button {
+    touch-action: manipulation;
+}
+
+:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+
+
+
+
+
+/* =========================================
+   2. BARRA DE NAVEGACIÓN RGB ANIMADA
+========================================= */
+
+nav {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px clamp(16px, 5vw, 70px);
+    color: white;
+
+    background: linear-gradient(
+        90deg,
+        #ff0000,
+        #ff00ff,
+        #0000ff,
+        #00ffff,
+        #00ff00,
+        #ffff00,
+        #ff0000
+    );
+
+    background-size: 400% 100%;
+    animation: rgbNavMove 7s linear infinite !important;
+
+    box-shadow: 0 5px 18px rgba(183, 28, 28, 0.25);
+}
+
+nav h1 {
+    margin: 0;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    font-weight: 900;
+    letter-spacing: -0.6px;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+nav ul li {
+    font-size: 0.92rem;
+}
+
+nav ul li a {
+    color: white;
+    font-weight: 650;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+nav ul li a:hover {
+    opacity: 0.75;
+}
+
+/* Animación del degradado */
+@keyframes rgbNavMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+/* =========================================
+   NAVEGACIÓN DE LA PÁGINA DE DETALLE
+========================================= */
+
+.official-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 17px 22px;
+    color: white;
+
+    background: linear-gradient(
+        90deg,
+        #ff0000,
+        #ff00ff,
+        #0000ff,
+        #00ffff,
+        #00ff00,
+        #ffff00,
+        #ff0000
+    );
+
+    background-size: 400% 100%;
+    animation: rgbNavMove 2s linear infinite !important;
+
+    border-radius: 18px 18px 0 0;
+}
+
+.official-nav h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 850;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* Adaptación para teléfonos */
+@media (max-width: 600px) {
+    nav {
+        padding: 15px 18px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    nav ul {
+        gap: 12px;
+    }
+
+    .official-nav {
+        padding: 15px;
+        gap: 10px;
+    }
+}
+
+
+/* =========================================
+   3. PORTADA
+========================================= */
+
+.hero {
+    padding: 42px 20px 16px;
+    text-align: center;
+}
+
+.hero h2 {
+    margin: 0 0 8px;
+    color: var(--text);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -1.2px;
+}
+
+.hero p {
+    max-width: 640px;
+    margin: 12px auto 0;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
+}
+
+/* =========================================
+   4. CUADRÍCULA PRINCIPAL
+========================================= */
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 26px clamp(14px, 3vw, 42px);
+}
+
+/* =========================================
+   5. TARJETAS DE POKÉMON
+========================================= */
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    padding: 19px 15px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+}
+
+.card::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef5350, #ffb74d);
+    content: "";
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #f3b8b6;
+    box-shadow: var(--shadow-hover);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+.card-img {
+    width: 138px;
+    height: 138px;
+    max-width: 100%;
+    margin-bottom: 12px;
+    padding: 10px;
+    object-fit: contain;
+    background: linear-gradient(145deg, #f8faff, #eaf0f8);
+    border: 1px solid #edf1f7;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.card:hover .card-img {
+    transform: scale(1.06);
+}
+
+.card-body {
+    width: 100%;
+    text-align: center;
+}
+
+.pokemon-id {
+    display: inline-block;
+    padding: 3px 9px;
+    color: #768197;
+    background: #f0f3f8;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 850;
+    letter-spacing: 0.5px;
+}
+
+.card-title {
+    margin: 9px 0 12px;
+    color: var(--text);
+    font-size: 1.15rem;
+    font-weight: 850;
+    line-height: 1.3;
+    text-transform: capitalize;
+    overflow-wrap: anywhere;
+}
+
+.types-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px;
+    margin: 10px 0;
+}
+
+/* =========================================
+   6. TIPOS DE POKÉMON
+========================================= */
+
+.type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 5px 11px;
+    color: white;
+    background: #778195;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.3;
+    text-align: center;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.type-badge.grass,
+.type-grass {
+    color: #243516;
+    background: #9bcc50;
+}
+
+.type-badge.poison,
+.type-poison {
+    background: #a95ac7;
+}
+
+.type-badge.fire,
+.type-fire {
+    background: #f08030;
+}
+
+.type-badge.water,
+.type-water {
+    background: #4592c4;
+}
+
+.type-badge.electric,
+.type-electric {
+    color: #352c00;
+    background: #eed535;
+}
+
+.type-badge.bug,
+.type-bug {
+    background: #729f3f;
+}
+
+.type-badge.normal,
+.type-normal {
+    color: #252b36;
+    background: #c6c9cd;
+}
+
+.type-badge.flying,
+.type-flying {
+    color: #183c48;
+    background: #82d8e8;
+}
+
+.type-badge.ground,
+.type-ground {
+    color: #49351d;
+    background: #d8b16b;
+}
+
+.type-badge.rock,
+.type-rock {
+    color: #332b20;
+    background: #b8a77b;
+}
+
+.type-badge.fighting,
+.type-fighting {
+    background: #ce4545;
+}
+
+.type-badge.psychic,
+.type-psychic {
+    background: #f85888;
+}
+
+.type-badge.ghost,
+.type-ghost {
+    background: #735797;
+}
+
+.type-badge.ice,
+.type-ice {
+    color: #23404a;
+    background: #98d8d8;
+}
+
+.type-badge.dragon,
+.type-dragon {
+    background: #6f35fc;
+}
+
+.type-badge.dark,
+.type-dark {
+    background: #5a5365;
+}
+
+.type-badge.steel,
+.type-steel {
+    color: #263746;
+    background: #aab8c5;
+}
+
+.type-badge.fairy,
+.type-fairy {
+    color: #593444;
+    background: #ee99ac;
+}
+
+.types-row,
+#detail-types {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =========================================
+   7. BOTONES
+========================================= */
+
+.btn-ver-mas,
+.pagination button {
+    padding: 10px 18px;
+    color: white;
+    background: linear-gradient(120deg, #ef5350, #c62828);
+    border: 0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(198, 40, 40, 0.14);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-ver-mas {
+    width: 100%;
+    margin-top: auto;
+}
+
+.btn-ver-mas:hover,
+.pagination button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(198, 40, 40, 0.22);
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    color: white;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-weight: 750;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.btn-volver:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* =========================================
+   8. CARGA Y ERRORES
+========================================= */
+
+.loading,
+.error-msg {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 25px 18px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.loading::before {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 9px;
+    vertical-align: -3px;
+    border: 3px solid #dbe5f5;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    content: "";
+    animation: spin 0.8s linear infinite;
+}
+
+.error-msg,
+.error-message {
+    color: #b42318;
+    background: #fff3f1;
+    border: 1px solid #ffd5cf;
+    border-radius: 12px;
+}
+
+.error-message {
+    margin: 16px 0;
+    padding: 14px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================
+   9. PAGINACIÓN
+========================================= */
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    width: 100%;
+    padding: 24px 15px 38px;
+}
+
+.pagination span {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.pagination button:disabled {
+    color: #8b93a1;
+    background: #e2e6ed;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================
+   10. DETALLE ANTIGUO
+========================================= */
+
+.detail-container {
+    width: min(100% - 30px, 760px);
+    margin: 30px auto;
+}
+
+.detail-content {
+    margin-top: 18px;
+    padding: clamp(18px, 4vw, 30px);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.detail-img-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 185px;
+    height: 185px;
+    margin: 0 auto 20px;
+    background: linear-gradient(145deg, #f7f9fc, #eaf0f8);
+    border: 1px solid #e8edf5;
+    border-radius: 50%;
+}
+
+.detail-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+}
+
+/* =========================================
+   11. INFORMACIÓN Y ESTADÍSTICAS ANTIGUAS
+========================================= */
+
+.bio-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 14px;
+    margin: 20px 0;
+    padding: 16px;
+    background: #f5f7fb;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.92rem;
+}
+
+.stats-section {
+    margin-top: 22px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    text-align: left;
+}
+
+.stats-section h3 {
+    margin: 0 0 18px;
+    font-size: 1.08rem;
+    text-align: center;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 13px;
+    font-size: 0.88rem;
+}
+
+.stat-name {
+    width: 85px;
+    flex-shrink: 0;
+    color: #5c6678;
+    font-weight: 750;
+}
+
+.stat-bar {
+    flex: 1;
+    height: 10px;
+    overflow: hidden;
+    background: #e9edf4;
+    border-radius: 20px;
+}
+
+.stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff8a65, #e53935);
+    border-radius: 20px;
+    transition: width 0.6s ease;
+}
+
+.stat-val {
+    width: 36px;
+    color: var(--text);
+    font-weight: 850;
+    text-align: right;
+}
+
+/* =========================================
+   12. CONTENEDOR DE DETALLE
+========================================= */
+
+.official-detail-container {
+    width: min(calc(100% - 32px), 1120px);
+    margin: 28px auto;
+}
+
+.official-card {
+    padding: clamp(18px, 3vw, 34px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 18px 18px;
+    box-shadow: var(--shadow);
+}
+
+.card-header-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 26px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #edf0f5;
+}
+
+.card-header-title h1,
+.card-header-title h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -0.7px;
+    overflow-wrap: anywhere;
+    text-transform: capitalize;
+}
+
+.pokemon-num {
+    color: #929bad;
+    font-size: clamp(0.95rem, 3vw, 1.35rem);
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+/* =========================================
+   13. DISTRIBUCIÓN E IMAGEN PRINCIPAL
+========================================= */
+
+.main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: start;
+    gap: clamp(18px, 3vw, 30px);
+}
+
+.image-column,
+.info-column {
+    min-width: 0;
+}
+
+.official-img-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 285px;
+    padding: 22px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #ffffff 0%, #f4f7fc 72%);
+    border: 1px solid #e9edf4;
+    border-radius: 18px;
+}
+
+.official-img {
+    width: 100%;
+    max-width: 285px;
+    height: 255px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 9px rgba(40, 50, 70, 0.12));
+    transition: transform 0.25s ease;
+}
+
+.official-img-box:hover .official-img {
+    transform: scale(1.04);
+}
+
+/* =========================================
+   14. PANEL DE INFORMACIÓN
+========================================= */
+
+.blue-info-panel {
+    margin-bottom: 22px;
+    padding: 21px;
+    color: white;
+    background: linear-gradient(135deg, #36b4df, #1689bb);
+    border-radius: 15px;
+    box-shadow: 0 7px 18px rgba(48, 167, 215, 0.17);
+}
+
+.info-row {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-group .label {
+    display: block;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.info-group .value {
+    display: block;
+    font-size: 0.98rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================
+   15. DESCRIPCIÓN
+========================================= */
+
+.section-block {
+    margin-bottom: 23px;
+}
+
+.section-block h3 {
+    margin: 0 0 12px;
+    color: #394150;
+    font-size: 1.03rem;
+    font-weight: 850;
+}
+
+.description-box {
+    margin-top: 10px;
+    padding: 19px;
+    background: #f7f9fc;
+    border: 1px solid #e8edf4;
+    border-radius: 14px;
+}
+
+.description-box h3 {
+    margin: 0 0 9px;
+    color: #394150;
+    font-size: 0.9rem;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.description-box p {
+    margin: 0;
+    color: #596477;
+    font-size: 0.94rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================
+   16. ESTADÍSTICAS VERTICALES
+========================================= */
+
+.base-stats-box {
+    margin-top: 22px;
+    padding: 21px 15px;
+    color: white;
+    background: linear-gradient(145deg, #303744, #202631);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(30, 41, 59, 0.12);
+}
+
+.base-stats-box h4 {
+    margin: 0 0 20px;
+    color: #e7ecf5;
+    font-size: 0.95rem;
+    font-weight: 850;
+    text-align: center;
+}
+
+.stats-bars-grid {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 5px;
+    height: 145px;
+    padding: 0 3px;
+}
+
+.stat-col {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+.stat-number {
+    margin-bottom: 7px;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 850;
+}
+
+.bar-container {
+    display: flex;
+    align-items: flex-end;
+    width: 15px;
+    max-width: 100%;
+    height: 85px;
+    margin-bottom: 9px;
+    overflow: hidden;
+    background: #4b5565;
+    border-radius: 8px;
+}
+
+.bar-fill {
+    width: 100%;
+    height: 0;
+    background: linear-gradient(0deg, #1689bb, #54c9f0);
+    border-radius: 8px;
+    transition: height 0.7s ease;
+}
+
+.stat-col > span:last-child {
+    color: #c0cad9;
+    font-size: 0.66rem;
+    text-align: center;
+}
+
+/* =========================================
+   17. EVOLUCIONES: TARJETAS COMPACTAS
+   Compatible con evolution-item y evo-card
+========================================= */
+
+.evolution-section {
+    margin-top: 30px;
+    padding: 23px;
+    color: white;
+    background: linear-gradient(145deg, #303744, #202631);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(30, 41, 59, 0.12);
+}
+
+.evolution-section h3,
+#evolution-container h3 {
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    color: #f2f5fa;
+    border-bottom: 1px solid #485161;
+    font-size: 1.1rem;
+    font-weight: 850;
+}
+
+/* Contenedor que utiliza tu detalle.js */
+
+#evolution-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 8px 0;
+}
+
+/* Tarjetas generadas por detalle.js */
+
+#evolution-container .evolution-item {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    flex: 0 1 112px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    width: 112px;
+    min-width: 0;
+    max-width: 112px;
+    min-height: 125px;
+    height: auto;
+
+    margin: 0;
+    padding: 10px 7px;
+    overflow: hidden;
+
+    color: #f7f9fc;
+    background: #3b4453;
+    border: 1px solid #4a5567;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 750;
+    line-height: 1.3;
+    text-align: center;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#evolution-container .evolution-item:hover {
+    transform: translateY(-3px);
+    background: #485468;
+    border-color: #65c8ed;
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.18);
+}
+
+#evolution-container .evolution-item img {
+    display: block;
+    flex: 0 0 auto;
+    width: 76px;
+    height: 76px;
+    max-width: 100%;
+    margin: 0;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.13));
+}
+
+#evolution-container .evolution-item span {
+    display: block;
+    width: 100%;
+    margin: 0;
+    color: inherit;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* Resalta el Pokémon que se está consultando */
+
+#evolution-container .evolution-item.current-evolution {
+    background: #503b42;
+    border: 2px solid #ff7777;
+    box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.13);
+}
+
+/* Compatibilidad con las tarjetas antiguas .evo-card */
+
+.evolution-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+}
+
+.evo-card {
+    display: flex;
+    flex: 0 1 112px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 112px;
+    padding: 10px 7px;
+    color: white;
+    background: #3b4453;
+    border: 1px solid #4a5567;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.evo-card:hover {
+    transform: translateY(-3px);
+    background: #485468;
+}
+
+.evo-card img {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 7px;
+    object-fit: contain;
+}
+
+.evo-card p {
+    margin: 0;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-align: center;
+    overflow-wrap: anywhere;
+    text-transform: capitalize;
+}
+
+.evo-id {
+    margin-top: 4px;
+    color: #b7c1d0;
+    font-size: 0.7rem;
+}
+
+/* =========================================
+   18. TABLETAS Y LAPTOPS PEQUEÑAS
+========================================= */
+
+@media (max-width: 1100px) {
+    .container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .card-img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .main-grid {
+        gap: 22px;
+    }
+}
+
+@media (max-width: 760px) {
+    .container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        padding: 20px 15px;
+    }
+
+    .main-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 22px;
+    }
+
+    .official-img-box {
+        min-height: 240px;
+    }
+
+    .official-img {
+        height: 220px;
+    }
+
+    .official-card {
+        padding: 22px;
+    }
+}
+
+/* =========================================
+   19. CELULARES
+========================================= */
+
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px 18px;
+    }
+
+    nav h1 {
+        font-size: 1.28rem;
+    }
+
+    nav ul {
+        gap: 12px;
+    }
+
+    nav ul li {
+        font-size: 0.84rem;
+    }
+
+    .hero {
+        padding: 30px 17px 10px;
+    }
+
+    .hero h2 {
+        letter-spacing: -0.6px;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+        padding: 16px 11px;
+    }
+
+    .card {
+        padding: 14px 8px;
+        border-radius: 14px;
+    }
+
+    .card-img {
+        width: 105px;
+        height: 105px;
+        margin-bottom: 10px;
+        padding: 7px;
+    }
+
+    .card-title {
+        margin: 7px 0 9px;
+        font-size: 0.98rem;
+    }
+
+    .pokemon-id {
+        padding: 3px 7px;
+        font-size: 0.67rem;
+    }
+
+    .type-badge {
+        min-width: 0;
+        padding: 4px 8px;
+        font-size: 0.67rem;
+    }
+
+    .types-container {
+        gap: 5px;
+    }
+
+    .official-detail-container {
+        width: calc(100% - 18px);
+        margin: 13px auto;
+    }
+
+    .official-nav {
+        padding: 14px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .official-nav h1 {
+        font-size: 1rem;
+    }
+
+    .btn-volver {
+        padding: 7px 10px;
+        font-size: 0.78rem;
+    }
+
+    .official-card {
+        padding: 15px;
+        border-radius: 0 0 14px 14px;
+    }
+
+    .card-header-title {
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 19px;
+    }
+
+    .card-header-title h1,
+    .card-header-title h2 {
+        font-size: 1.45rem;
+    }
+
+    .pokemon-num {
+        padding-top: 3px;
+        font-size: 0.88rem;
+    }
+
+    .official-img-box {
+        min-height: 205px;
+        padding: 12px;
+        border-radius: 15px;
+    }
+
+    .official-img {
+        height: 195px;
+    }
+
+    .blue-info-panel {
+        padding: 16px;
+        border-radius: 13px;
+    }
+
+    .info-row {
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+    .info-group .label {
+        font-size: 0.65rem;
+    }
+
+    .info-group .value {
+        font-size: 0.86rem;
+    }
+
+    .description-box {
+        padding: 14px;
+    }
+
+    .description-box p {
+        font-size: 0.88rem;
+        line-height: 1.7;
+    }
+
+    .base-stats-box {
+        padding: 17px 9px;
+    }
+
+    .stats-bars-grid {
+        gap: 2px;
+        height: 137px;
+    }
+
+    .bar-container {
+        width: 11px;
+        height: 78px;
+    }
+
+    .stat-number {
+        font-size: 0.68rem;
+    }
+
+    .stat-col > span:last-child {
+        font-size: 0.56rem;
+    }
+
+    .evolution-section {
+        margin-top: 22px;
+        padding: 16px 10px;
+        border-radius: 14px;
+    }
+
+    #evolution-container,
+    .evolution-grid {
+        gap: 9px;
+    }
+
+    #evolution-container .evolution-item {
+        flex-basis: 94px;
+        width: 94px;
+        max-width: 94px;
+        min-height: 108px;
+        padding: 8px 5px;
+        border-radius: 12px;
+    }
+
+    #evolution-container .evolution-item img {
+        width: 62px;
+        height: 62px;
+    }
+
+    #evolution-container .evolution-item span {
+        font-size: 0.68rem;
+    }
+
+    .evo-card {
+        flex-basis: 94px;
+        max-width: 94px;
+        padding: 8px 5px;
+        border-radius: 12px;
+    }
+
+    .evo-card img {
+        width: 62px;
+        height: 62px;
+    }
+
+    .evo-card p {
+        font-size: 0.68rem;
+    }
+
+    .pagination {
+        gap: 9px;
+        padding: 20px 10px 28px;
+    }
+
+    .pagination button {
+        padding: 9px 12px;
+        font-size: 0.8rem;
+    }
+
+    .pagination span {
+        font-size: 0.84rem;
+    }
+}
+
+/* =========================================
+   20. CELULARES MUY PEQUEÑOS
+========================================= */
+
+@media (max-width: 350px) {
+    .container {
+        gap: 8px;
+        padding: 12px 8px;
+    }
+
+    .card {
+        padding: 12px 6px;
+    }
+
+    .card-img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+
+    .official-nav {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .card-header-title {
+        flex-direction: column;
+    }
+
+    .info-row {
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .stats-bars-grid {
+        gap: 1px;
+    }
+
+    .stat-col > span:last-child {
+        font-size: 0.51rem;
+    }
+
+    #evolution-container {
+        gap: 7px;
+    }
+
+    #evolution-container .evolution-item {
+        flex-basis: 86px;
+        width: 86px;
+        max-width: 86px;
+    }
+}
+
+/* =========================================
+   21. ACCESIBILIDAD
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
