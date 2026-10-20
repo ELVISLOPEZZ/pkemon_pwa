@@ -1,3 +1,56 @@
+/* =========================================
+   BOTÓN PERSONALIZADO DE INSTALACIÓN PWA
+========================================= */
+
+.pokemon-nav {
+    position: relative;
+}
+
+.install-button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    border: 2px solid #ffffff;
+    border-radius: 25px;
+    background: #ef5350;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    transition: background 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+}
+
+.install-button:hover {
+    background: #c62828;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.install-button:active {
+    transform: translateY(-50%) scale(0.96);
+}
+
+/* Ocultar el botón cuando no se pueda instalar */
+.install-button[hidden] {
+    display: none !important;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 600px) {
+    .install-button {
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .pokemon-nav .nav-logo img {
+        max-width: 45vw;
+    }
+}
+
 
 /* =========================================
    1. VARIABLES Y CONFIGURACIÓN GENERAL

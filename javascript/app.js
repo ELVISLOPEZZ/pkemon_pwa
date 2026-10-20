@@ -1,19 +1,85 @@
 
 /* =========================================
-   REGISTRO DEL SERVICE WORKER
+   INSTALACIÓN PERSONALIZADA DE LA PWA
 ========================================= */
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../servicesworker.js')
-            .then(reg => {
-                console.log('Service Worker registrado con éxito:', reg);
-            })
-            .catch(err => {
-                console.error('Fallo al registrar el Service Worker:', err);
-            });
+let deferredInstallPrompt = null;
+
+const installButton = document.getElementById('install-button');
+
+// Detectar si el navegador permite instalar la PWA
+window.addEventListener('beforeinstallprompt', (event) => {
+    // Evitar que aparezca automáticamente el aviso del navegador
+    event.preventDefault();
+
+    // Guardar el evento para usarlo cuando pulsen el botón
+    deferredInstallPrompt = event;
+
+    // Mostrar el botón de instalación
+    if (installButton) {
+        installButton.hidden = false;
+    }
+
+    console.log('La PWA está disponible para instalar.');
+});
+
+// Ejecutar la instalación al pulsar el botón
+if (installButton) {
+    installButton.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) {
+            return;
+        }
+
+        // Guardar el evento y limpiar la referencia
+        const installPrompt = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+
+        installButton.disabled = true;
+
+        try {
+            // Mostrar el cuadro de instalación
+            await installPrompt.prompt();
+
+            // Consultar la decisión del usuario
+            const result = await installPrompt.userChoice;
+
+            if (result.outcome === 'accepted') {
+                console.log('El usuario aceptó instalar la PWA.');
+            } else {
+                console.log('El usuario canceló la instalación.');
+            }
+
+            // El evento solo se puede utilizar una vez
+            installButton.hidden = true;
+
+        } catch (error) {
+            console.error('Error durante la instalación:', error);
+        } finally {
+            installButton.disabled = false;
+        }
     });
 }
+
+// Detectar cuando la PWA se instala
+window.addEventListener('appinstalled', () => {
+    console.log('Pokédex PWA instalada correctamente.');
+
+    if (installButton) {
+        installButton.hidden = true;
+    }
+
+    deferredInstallPrompt = null;
+});
+
+// Ocultar el botón si la aplicación ya está instalada
+const isAppInstalled =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+if (isAppInstalled && installButton) {
+    installButton.hidden = true;
+}
+
 
 /* =========================================
    TRADUCCIÓN DE TIPOS
@@ -40,6 +106,7 @@ const typeTranslations = {
     fairy: "Hada"
 };
 
+
 /* =========================================
    CONFIGURACIÓN
 ========================================= */
@@ -47,6 +114,7 @@ const typeTranslations = {
 const container = document.getElementById('pokemon-container');
 const TOTAL_POKEMON = 151;
 const API_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151&offset=0';
+
 
 /* =========================================
    CARGAR LOS 151 POKÉMON
@@ -65,7 +133,6 @@ async function fetchAllPokemons() {
     `;
 
     try {
-        // Obtener la lista de los primeros 151 Pokémon
         const response = await fetch(API_URL);
 
         if (!response.ok) {
@@ -75,7 +142,7 @@ async function fetchAllPokemons() {
         const data = await response.json();
         const allPokemons = [];
 
-        // Cargar en grupos de 10 Pokémon
+        // Cargar Pokémon en grupos de 10
         for (let i = 0; i < data.results.length; i += 10) {
             const batch = data.results.slice(i, i + 10);
 
@@ -94,7 +161,7 @@ async function fetchAllPokemons() {
 
                             const pokemon = await res.json();
 
-                            // Guardar los datos para usarlos sin conexión
+                            // Guardar datos para usarlos sin conexión
                             try {
                                 localStorage.setItem(
                                     cacheKey,
@@ -115,16 +182,15 @@ async function fetchAllPokemons() {
                                 error
                             );
 
-                            // Esperar un poco antes de volver a intentar
                             if (attempt < 3) {
-                                await new Promise(resolve =>
+                                await new Promise((resolve) =>
                                     setTimeout(resolve, 500 * attempt)
                                 );
                             }
                         }
                     }
 
-                    // Si fallaron las peticiones, usar los datos guardados
+                    // Recuperar los datos guardados si falla la conexión
                     try {
                         const cached = localStorage.getItem(cacheKey);
 
@@ -144,7 +210,6 @@ async function fetchAllPokemons() {
 
             allPokemons.push(...results.filter(Boolean));
 
-            // Mostrar el progreso de carga
             container.innerHTML = `
                 <p class="loading">
                     Cargando Pokémon:
@@ -155,7 +220,7 @@ async function fetchAllPokemons() {
         }
 
         // Recuperar Pokémon faltantes desde localStorage
-        const loadedIds = new Set(allPokemons.map(p => p.id));
+        const loadedIds = new Set(allPokemons.map(pokemon => pokemon.id));
 
         for (let id = 1; id <= TOTAL_POKEMON; id++) {
             if (!loadedIds.has(id)) {
@@ -168,7 +233,7 @@ async function fetchAllPokemons() {
             }
         }
 
-        // Eliminar duplicados y ordenar del 1 al 151
+        // Eliminar duplicados y ordenar por número
         const uniquePokemons = [
             ...new Map(
                 allPokemons.map(pokemon => [pokemon.id, pokemon])
@@ -200,10 +265,10 @@ async function fetchAllPokemons() {
 
     } catch (error) {
         console.error('Error al cargar desde la API:', error);
-
         loadPokemonsOffline();
     }
 }
+
 
 /* =========================================
    BUSCAR POKÉMON GUARDADO POR NÚMERO
@@ -231,6 +296,7 @@ function findCachedPokemon(id) {
 
     return null;
 }
+
 
 /* =========================================
    CARGAR POKÉMON SIN CONEXIÓN
@@ -300,6 +366,7 @@ function loadPokemonsOffline() {
     );
 }
 
+
 /* =========================================
    CREAR TARJETA DEL POKÉMON
 ========================================= */
@@ -326,13 +393,12 @@ function renderCard(pokemon) {
     const formattedId =
         `N.º ${pokemon.id.toString().padStart(4, '0')}`;
 
-    // Generar las etiquetas de tipos
+    // Generar etiquetas de tipos
     let typesHTML = '';
 
     if (pokemon.types) {
         pokemon.types.forEach(t => {
             const typeKey = t.type.name;
-
             const typeNameEs =
                 typeTranslations[typeKey] || typeKey.toUpperCase();
 
@@ -374,8 +440,7 @@ function renderCard(pokemon) {
 
         img.dataset.fallbackUsed = 'true';
 
-        const fallback =
-            pokemon.sprites?.front_default || '';
+        const fallback = pokemon.sprites?.front_default || '';
 
         if (fallback && img.src !== fallback) {
             img.src = fallback;
@@ -386,6 +451,7 @@ function renderCard(pokemon) {
 
     container.appendChild(card);
 }
+
 
 /* =========================================
    INICIAR LA APLICACIÓN
