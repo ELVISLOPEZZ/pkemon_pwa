@@ -1,3 +1,178 @@
+
+/* =========================================
+   BUSCADOR Y FILTROS TIPO CHIPS
+========================================= */
+
+.pokemon-tools {
+    width: min(1100px, 92%);
+    margin: 25px auto 30px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto 25px;
+    padding: 0 16px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+    border-color: #ef5350;
+    box-shadow: 0 0 0 4px rgba(239, 83, 80, 0.12);
+}
+
+.search-icon {
+    color: #777777;
+    font-size: 28px;
+    line-height: 1;
+}
+
+#pokemon-search {
+    flex: 1;
+    min-width: 0;
+    padding: 15px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #222222;
+    font-size: 15px;
+}
+
+#pokemon-search::placeholder {
+    color: #999999;
+}
+
+#clear-search {
+    border: none;
+    background: transparent;
+    color: #666666;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#clear-search[hidden] {
+    display: none;
+}
+
+.filters-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.filters-heading h3 {
+    margin: 0;
+    color: #222222;
+    font-size: 17px;
+}
+
+#reset-filters {
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    color: #d84343;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#reset-filters:hover {
+    text-decoration: underline;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-chip {
+    padding: 9px 16px;
+    border: 1px solid #dedede;
+    border-radius: 25px;
+    background: #ffffff;
+    color: #444444;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.filter-chip:hover {
+    border-color: #ef5350;
+    transform: translateY(-1px);
+}
+
+.filter-chip.active {
+    border-color: #ef5350;
+    background: #ef5350;
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(239, 83, 80, 0.22);
+}
+
+.filter-chip:focus-visible,
+#reset-filters:focus-visible,
+#clear-search:focus-visible {
+    outline: 3px solid rgba(239, 83, 80, 0.35);
+    outline-offset: 3px;
+}
+
+.results-count {
+    margin: 16px 0 0;
+    color: #666666;
+    font-size: 13px;
+}
+
+/* Mensaje cuando no hay coincidencias */
+.no-results {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 35px 15px;
+    color: #666666;
+    text-align: center;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 600px) {
+    .pokemon-tools {
+        width: 92%;
+        margin: 20px auto;
+    }
+
+    #pokemon-search {
+        padding: 13px 0;
+        font-size: 14px;
+    }
+
+    .filter-chips {
+        gap: 8px;
+    }
+
+    .filter-chip {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .filters-heading h3 {
+        font-size: 15px;
+    }
+}
+
+
+
 /* =========================================
    BOTÓN PERSONALIZADO DE INSTALACIÓN PWA
 ========================================= */
@@ -1529,5 +1704,134 @@ nav ul li a:hover {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==================================================
+   FONDO DIFUMINADO + TARJETAS TIPO CRISTAL
+   Pegar AL FINAL de css/style.css
+================================================== */
+
+html {
+    min-height: 100%;
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    background: #edf2fb !important;
+}
+
+/* Las manchas de color quedan por detrás de todo el contenido. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -70px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 12% 18%, rgba(255, 70, 95, 0.32) 0, transparent 34%),
+        radial-gradient(ellipse at 88% 16%, rgba(105, 95, 255, 0.30) 0, transparent 32%),
+        radial-gradient(ellipse at 65% 62%, rgba(48, 198, 210, 0.25) 0, transparent 34%),
+        radial-gradient(ellipse at 12% 88%, rgba(255, 180, 70, 0.24) 0, transparent 30%);
+    filter: blur(42px);
+    transform: translateZ(0);
+}
+
+/* Efecto cristal para las tarjetas de la Pokédex. */
+#pokemon-container .card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.66) !important;
+    border: 1px solid rgba(255, 255, 255, 0.92) !important;
+    border-radius: 22px;
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    backdrop-filter: blur(18px) saturate(145%);
+    box-shadow:
+        0 10px 28px rgba(40, 52, 100, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+#pokemon-container .card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 4px;
+    opacity: 1 !important;
+    border-radius: 0 0 8px 8px;
+    background: linear-gradient(90deg, #ff6b78, #a18bff, #60d8d2);
+}
+
+#pokemon-container .card:hover {
+    transform: translateY(-7px);
+    background: rgba(255, 255, 255, 0.82) !important;
+    border-color: #ffffff !important;
+    box-shadow:
+        0 18px 38px rgba(40, 52, 100, 0.17),
+        0 0 22px rgba(115, 125, 255, 0.13);
+}
+
+#pokemon-container .card .card-img {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(226,235,250,0.72));
+    border: 1px solid rgba(255,255,255,0.95);
+    box-shadow: inset 0 1px 8px rgba(255,255,255,0.8);
+}
+
+#pokemon-container .card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+#pokemon-container .card .card-title {
+    color: #20283b;
+}
+
+#pokemon-container .card .pokemon-id {
+    background: rgba(230, 236, 248, 0.82);
+}
+
+/* El buscador y los filtros también combinan con el fondo. */
+.pokemon-tools .search-box,
+.pokemon-tools .filter-chip {
+    background: rgba(255, 255, 255, 0.70);
+    border-color: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 6px 20px rgba(40, 52, 100, 0.08);
+}
+
+.pokemon-tools .filter-chip.active {
+    background: linear-gradient(135deg, #ef5350, #d83255);
+    border-color: transparent;
+    color: #fff;
+}
+
+.pokemon-tools .search-box:focus-within {
+    border-color: #ef5350;
+    box-shadow: 0 0 0 4px rgba(239, 83, 80, 0.13), 0 8px 22px rgba(40, 52, 100, 0.10);
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    padding: 34px 18px;
+    color: #4b5568;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 18px;
+    text-align: center;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pokemon-container .card,
+    #pokemon-container .card .card-img {
+        transition: none;
     }
 }

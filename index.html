@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,6 +41,55 @@
             <p>Datos en tiempo real y disponible sin conexión.</p>
         </header>
 
+        <!-- Buscador -->
+        <section class="pokemon-tools" aria-label="Buscar y filtrar Pokémon">
+            <div class="search-box">
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input
+                    type="search"
+                    id="pokemon-search"
+                    placeholder="Buscar Pokémon por nombre o número..."
+                    aria-label="Buscar Pokémon por nombre o número"
+                    autocomplete="off"
+                >
+                <button id="clear-search" type="button" aria-label="Limpiar búsqueda" hidden>
+                    ×
+                </button>
+            </div>
+
+            <!-- Filtros tipo chips -->
+            <div class="filters-heading">
+                <h3>Filtrar por tipo</h3>
+                <button id="reset-filters" type="button">Limpiar filtros</button>
+            </div>
+
+            <div class="filter-chips" id="filter-chips" aria-label="Tipos de Pokémon">
+                <button class="filter-chip active" type="button" data-type="all" aria-pressed="true">Todos</button>
+                <button class="filter-chip" type="button" data-type="grass" aria-pressed="false">Planta</button>
+                <button class="filter-chip" type="button" data-type="fire" aria-pressed="false">Fuego</button>
+                <button class="filter-chip" type="button" data-type="water" aria-pressed="false">Agua</button>
+                <button class="filter-chip" type="button" data-type="electric" aria-pressed="false">Eléctrico</button>
+                <button class="filter-chip" type="button" data-type="poison" aria-pressed="false">Veneno</button>
+                <button class="filter-chip" type="button" data-type="bug" aria-pressed="false">Bicho</button>
+                <button class="filter-chip" type="button" data-type="normal" aria-pressed="false">Normal</button>
+                <button class="filter-chip" type="button" data-type="flying" aria-pressed="false">Volador</button>
+                <button class="filter-chip" type="button" data-type="ground" aria-pressed="false">Tierra</button>
+                <button class="filter-chip" type="button" data-type="rock" aria-pressed="false">Roca</button>
+                <button class="filter-chip" type="button" data-type="fighting" aria-pressed="false">Lucha</button>
+                <button class="filter-chip" type="button" data-type="psychic" aria-pressed="false">Psíquico</button>
+                <button class="filter-chip" type="button" data-type="ghost" aria-pressed="false">Fantasma</button>
+                <button class="filter-chip" type="button" data-type="ice" aria-pressed="false">Hielo</button>
+                <button class="filter-chip" type="button" data-type="dragon" aria-pressed="false">Dragón</button>
+                <button class="filter-chip" type="button" data-type="dark" aria-pressed="false">Siniestro</button>
+                <button class="filter-chip" type="button" data-type="steel" aria-pressed="false">Acero</button>
+                <button class="filter-chip" type="button" data-type="fairy" aria-pressed="false">Hada</button>
+            </div>
+
+            <p id="results-count" class="results-count" aria-live="polite">
+                Cargando Pokémon...
+            </p>
+        </section>
+
         <div id="pokemon-container" class="container">
             <p class="loading">Cargando Pokémon...</p>
         </div>
@@ -58,10 +108,7 @@
                         );
                     })
                     .catch((error) => {
-                        console.error(
-                            "Error al registrar la PWA:",
-                            error
-                        );
+                        console.error("Error al registrar la PWA:", error);
                     });
             });
         }

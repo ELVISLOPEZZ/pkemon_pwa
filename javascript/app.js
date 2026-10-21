@@ -1,88 +1,56 @@
-
 /* =========================================
    INSTALACIÓN PERSONALIZADA DE LA PWA
 ========================================= */
 
 let deferredInstallPrompt = null;
+const installButton = document.getElementById("install-button");
 
-const installButton = document.getElementById('install-button');
-
-// Detectar si el navegador permite instalar la PWA
-window.addEventListener('beforeinstallprompt', (event) => {
-    // Evitar que aparezca automáticamente el aviso del navegador
+window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
-
-    // Guardar el evento para usarlo cuando pulsen el botón
     deferredInstallPrompt = event;
-
-    // Mostrar el botón de instalación
-    if (installButton) {
-        installButton.hidden = false;
-    }
-
-    console.log('La PWA está disponible para instalar.');
+    if (installButton) installButton.hidden = false;
 });
 
-// Ejecutar la instalación al pulsar el botón
 if (installButton) {
-    installButton.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) {
-            return;
-        }
+    installButton.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) return;
 
-        // Guardar el evento y limpiar la referencia
         const installPrompt = deferredInstallPrompt;
         deferredInstallPrompt = null;
-
         installButton.disabled = true;
 
         try {
-            // Mostrar el cuadro de instalación
             await installPrompt.prompt();
-
-            // Consultar la decisión del usuario
             const result = await installPrompt.userChoice;
-
-            if (result.outcome === 'accepted') {
-                console.log('El usuario aceptó instalar la PWA.');
-            } else {
-                console.log('El usuario canceló la instalación.');
-            }
-
-            // El evento solo se puede utilizar una vez
+            console.log(
+                result.outcome === "accepted"
+                    ? "El usuario aceptó instalar la PWA."
+                    : "El usuario canceló la instalación."
+            );
             installButton.hidden = true;
-
         } catch (error) {
-            console.error('Error durante la instalación:', error);
+            console.error("Error durante la instalación:", error);
         } finally {
             installButton.disabled = false;
         }
     });
 }
 
-// Detectar cuando la PWA se instala
-window.addEventListener('appinstalled', () => {
-    console.log('Pokédex PWA instalada correctamente.');
-
-    if (installButton) {
-        installButton.hidden = true;
-    }
-
+window.addEventListener("appinstalled", () => {
+    console.log("Pokédex PWA instalada correctamente.");
+    if (installButton) installButton.hidden = true;
     deferredInstallPrompt = null;
 });
 
-// Ocultar el botón si la aplicación ya está instalada
 const isAppInstalled =
-    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
 
-if (isAppInstalled && installButton) {
-    installButton.hidden = true;
-}
+if (isAppInstalled && installButton) installButton.hidden = true;
 
 
 /* =========================================
-   TRADUCCIÓN DE TIPOS
+   CONFIGURACIÓN Y TRADUCCIÓN DE TIPOS
 ========================================= */
 
 const typeTranslations = {
@@ -106,14 +74,155 @@ const typeTranslations = {
     fairy: "Hada"
 };
 
+const container = document.getElementById("pokemon-container");
+const searchInput = document.getElementById("pokemon-search");
+const clearSearchButton = document.getElementById("clear-search");
+const resetFiltersButton = document.getElementById("reset-filters");
+const filterChipsContainer = document.getElementById("filter-chips");
+const resultsCount = document.getElementById("results-count");
+
+const TOTAL_POKEMON = 151;
+const API_URL = "https://pokeapi.co/api/v2/pokemon?limit=151&offset=0";
+
+let allPokemonsData = [];
+let selectedType = "all";
+let loadingErrorMessage = "";
+
 
 /* =========================================
-   CONFIGURACIÓN
+   BUSCADOR Y FILTROS
 ========================================= */
 
-const container = document.getElementById('pokemon-container');
-const TOTAL_POKEMON = 151;
-const API_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151&offset=0';
+function normalizeText(value) {
+    return String(value ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+function getPokemonNumberFromSearch(value) {
+    const cleaned = String(value).trim().replace(/^#/, "");
+    if (!cleaned || !/^\d+$/.test(cleaned)) return null;
+    return Number(cleaned);
+}
+
+function getFilteredPokemons() {
+    const query = normalizeText(searchInput?.value ?? "");
+    const searchedNumber = getPokemonNumberFromSearch(searchInput?.value ?? "");
+
+    return allPokemonsData.filter((pokemon) => {
+        const nameMatches =
+            !query || normalizeText(pokemon.name).includes(query);
+
+        const numberMatches =
+            searchedNumber === null ||
+            String(pokemon.id) === String(searchedNumber);
+
+        const typeMatches =
+            selectedType === "all" ||
+            (pokemon.types || []).some((item) => item.type?.name === selectedType);
+
+        // Si el usuario escribió un número, se prioriza la coincidencia por número.
+        const searchMatches = searchedNumber !== null
+            ? numberMatches
+            : nameMatches;
+
+        return searchMatches && typeMatches;
+    });
+}
+
+function updateResultsCount(filteredCount) {
+    if (!resultsCount) return;
+
+    const total = allPokemonsData.length;
+    if (total === 0) {
+        resultsCount.textContent = loadingErrorMessage || "No se pudieron cargar los Pokémon.";
+        return;
+    }
+
+    if (filteredCount === total && selectedType === "all" && !(searchInput?.value || "").trim()) {
+        resultsCount.textContent = `Mostrando ${total} Pokémon`;
+    } else {
+        resultsCount.textContent = `Se encontraron ${filteredCount} de ${total} Pokémon`;
+    }
+}
+
+function updateActiveChip() {
+    if (!filterChipsContainer) return;
+
+    filterChipsContainer.querySelectorAll(".filter-chip").forEach((chip) => {
+        const isActive = chip.dataset.type === selectedType;
+        chip.classList.toggle("active", isActive);
+        chip.setAttribute("aria-pressed", String(isActive));
+    });
+}
+
+function renderFilteredPokemons() {
+    if (!container) return;
+
+    const filteredPokemons = getFilteredPokemons();
+    container.innerHTML = "";
+
+    if (filteredPokemons.length === 0) {
+        const message = document.createElement("p");
+        message.className = "no-results";
+        message.textContent = allPokemonsData.length
+            ? "No se encontraron Pokémon con esa búsqueda o filtro. Prueba con otro nombre o tipo."
+            : (loadingErrorMessage || "No hay Pokémon disponibles.");
+        container.appendChild(message);
+    } else {
+        const fragment = document.createDocumentFragment();
+        filteredPokemons.forEach((pokemon) => {
+            fragment.appendChild(createPokemonCard(pokemon));
+        });
+        container.appendChild(fragment);
+    }
+
+    updateResultsCount(filteredPokemons.length);
+
+    if (clearSearchButton) {
+        clearSearchButton.hidden = !(searchInput?.value || "").length;
+    }
+}
+
+function handleSearchInput() {
+    renderFilteredPokemons();
+}
+
+if (searchInput) {
+    searchInput.addEventListener("input", handleSearchInput);
+}
+
+if (clearSearchButton) {
+    clearSearchButton.addEventListener("click", () => {
+        if (searchInput) {
+            searchInput.value = "";
+            searchInput.focus();
+        }
+        renderFilteredPokemons();
+    });
+}
+
+if (filterChipsContainer) {
+    filterChipsContainer.addEventListener("click", (event) => {
+        const chip = event.target.closest(".filter-chip");
+        if (!chip || !filterChipsContainer.contains(chip)) return;
+
+        selectedType = chip.dataset.type || "all";
+        updateActiveChip();
+        renderFilteredPokemons();
+    });
+}
+
+if (resetFiltersButton) {
+    resetFiltersButton.addEventListener("click", () => {
+        selectedType = "all";
+        if (searchInput) searchInput.value = "";
+        updateActiveChip();
+        renderFilteredPokemons();
+    });
+}
 
 
 /* =========================================
@@ -122,27 +231,21 @@ const API_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151&offset=0';
 
 async function fetchAllPokemons() {
     if (!container) {
-        console.error('No se encontró el elemento pokemon-container.');
+        console.error("No se encontró el elemento pokemon-container.");
         return;
     }
 
-    container.innerHTML = `
-        <p class="loading">
-            Cargando los 151 Pokémon de Kanto...
-        </p>
-    `;
+    container.innerHTML = '<p class="loading">Cargando los 151 Pokémon de Kanto...</p>';
+    if (resultsCount) resultsCount.textContent = "Cargando Pokémon...";
 
     try {
         const response = await fetch(API_URL);
-
-        if (!response.ok) {
-            throw new Error('No se pudo obtener la lista de Pokémon.');
-        }
+        if (!response.ok) throw new Error("No se pudo obtener la lista de Pokémon.");
 
         const data = await response.json();
         const allPokemons = [];
 
-        // Cargar Pokémon en grupos de 10
+        // Se cargan en grupos de 10 para no saturar las solicitudes.
         for (let i = 0; i < data.results.length; i += 10) {
             const batch = data.results.slice(i, i + 10);
 
@@ -150,58 +253,33 @@ async function fetchAllPokemons() {
                 batch.map(async (item) => {
                     const cacheKey = `pokemon_${item.name}`;
 
-                    // Intentar cargar cada Pokémon hasta 3 veces
                     for (let attempt = 1; attempt <= 3; attempt++) {
                         try {
                             const res = await fetch(item.url);
-
-                            if (!res.ok) {
-                                throw new Error(`HTTP ${res.status}`);
-                            }
+                            if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
                             const pokemon = await res.json();
 
-                            // Guardar datos para usarlos sin conexión
                             try {
-                                localStorage.setItem(
-                                    cacheKey,
-                                    JSON.stringify(pokemon)
-                                );
+                                localStorage.setItem(cacheKey, JSON.stringify(pokemon));
                             } catch (storageError) {
-                                console.warn(
-                                    'No se pudo guardar en localStorage:',
-                                    storageError
-                                );
+                                console.warn("No se pudo guardar en localStorage:", storageError);
                             }
 
                             return pokemon;
-
                         } catch (error) {
-                            console.warn(
-                                `Intento ${attempt}/3 para ${item.name}:`,
-                                error
-                            );
-
+                            console.warn(`Intento ${attempt}/3 para ${item.name}:`, error);
                             if (attempt < 3) {
-                                await new Promise((resolve) =>
-                                    setTimeout(resolve, 500 * attempt)
-                                );
+                                await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
                             }
                         }
                     }
 
-                    // Recuperar los datos guardados si falla la conexión
                     try {
                         const cached = localStorage.getItem(cacheKey);
-
-                        if (cached) {
-                            return JSON.parse(cached);
-                        }
+                        if (cached) return JSON.parse(cached);
                     } catch (error) {
-                        console.error(
-                            `Error al recuperar ${item.name}:`,
-                            error
-                        );
+                        console.error(`Error al recuperar ${item.name}:`, error);
                     }
 
                     return null;
@@ -210,22 +288,18 @@ async function fetchAllPokemons() {
 
             allPokemons.push(...results.filter(Boolean));
 
-            container.innerHTML = `
-                <p class="loading">
-                    Cargando Pokémon:
-                    ${Math.min(i + batch.length, TOTAL_POKEMON)}
-                    de ${TOTAL_POKEMON}...
-                </p>
-            `;
+            if (resultsCount) {
+                resultsCount.textContent =
+                    `Cargando Pokémon: ${Math.min(i + batch.length, TOTAL_POKEMON)} de ${TOTAL_POKEMON}...`;
+            }
         }
 
-        // Recuperar Pokémon faltantes desde localStorage
-        const loadedIds = new Set(allPokemons.map(pokemon => pokemon.id));
+        const loadedIds = new Set(allPokemons.map((pokemon) => pokemon.id));
 
+        // Recuperar de caché los Pokémon que no se pudieron descargar.
         for (let id = 1; id <= TOTAL_POKEMON; id++) {
             if (!loadedIds.has(id)) {
                 const cached = findCachedPokemon(id);
-
                 if (cached) {
                     allPokemons.push(cached);
                     loadedIds.add(id);
@@ -233,38 +307,24 @@ async function fetchAllPokemons() {
             }
         }
 
-        // Eliminar duplicados y ordenar por número
-        const uniquePokemons = [
-            ...new Map(
-                allPokemons.map(pokemon => [pokemon.id, pokemon])
-            ).values()
+        allPokemonsData = [
+            ...new Map(allPokemons.map((pokemon) => [pokemon.id, pokemon])).values()
         ].sort((a, b) => a.id - b.id);
 
-        // Dibujar las tarjetas
-        container.innerHTML = '';
+        loadingErrorMessage = allPokemonsData.length < TOTAL_POKEMON
+            ? `Se cargaron ${allPokemonsData.length} de 151 Pokémon. Comprueba tu conexión.`
+            : "";
 
-        uniquePokemons.forEach(pokemon => {
-            renderCard(pokemon);
-        });
+        updateActiveChip();
+        renderFilteredPokemons();
 
-        // Avisar si faltan Pokémon
-        if (uniquePokemons.length < TOTAL_POKEMON) {
-            const message = document.createElement('p');
-
-            message.className = 'error-msg';
-            message.textContent =
-                `Se cargaron ${uniquePokemons.length} de 151 Pokémon. ` +
-                'Comprueba tu conexión y vuelve a intentarlo.';
-
-            container.prepend(message);
+        if (allPokemonsData.length < TOTAL_POKEMON) {
+            console.warn(loadingErrorMessage);
         }
 
-        console.log(
-            `Pokémon cargados: ${uniquePokemons.length} de ${TOTAL_POKEMON}`
-        );
-
+        console.log(`Pokémon cargados: ${allPokemonsData.length} de ${TOTAL_POKEMON}`);
     } catch (error) {
-        console.error('Error al cargar desde la API:', error);
+        console.error("Error al cargar desde la API:", error);
         loadPokemonsOffline();
     }
 }
@@ -275,25 +335,21 @@ async function fetchAllPokemons() {
 ========================================= */
 
 function findCachedPokemon(id) {
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key || !key.startsWith("pokemon_")) continue;
 
-        if (key && key.startsWith('pokemon_')) {
             try {
                 const pokemon = JSON.parse(localStorage.getItem(key));
-
-                if (pokemon && pokemon.id === id) {
-                    return pokemon;
-                }
+                if (pokemon && pokemon.id === id) return pokemon;
             } catch (error) {
-                console.error(
-                    `Error al leer los datos guardados (${key}):`,
-                    error
-                );
+                console.error(`Error al leer los datos guardados (${key}):`, error);
             }
         }
+    } catch (error) {
+        console.warn("No se pudo consultar localStorage:", error);
     }
-
     return null;
 }
 
@@ -305,65 +361,42 @@ function findCachedPokemon(id) {
 function loadPokemonsOffline() {
     if (!container) return;
 
-    container.innerHTML = '';
+    const cachedPokemons = [];
 
-    const allPokemons = [];
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key || !key.startsWith("pokemon_")) continue;
 
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-
-        if (key && key.startsWith('pokemon_')) {
             try {
                 const pokemon = JSON.parse(localStorage.getItem(key));
-
-                if (
-                    pokemon &&
-                    pokemon.id >= 1 &&
-                    pokemon.id <= TOTAL_POKEMON
-                ) {
-                    allPokemons.push(pokemon);
+                if (pokemon && pokemon.id >= 1 && pokemon.id <= TOTAL_POKEMON) {
+                    cachedPokemons.push(pokemon);
                 }
             } catch (error) {
-                console.error('Error al leer Pokémon guardado:', error);
+                console.error("Error al leer Pokémon guardado:", error);
             }
         }
+    } catch (error) {
+        console.warn("No se pudo acceder a localStorage:", error);
     }
 
-    // Eliminar duplicados y ordenar
-    const uniquePokemons = [
-        ...new Map(
-            allPokemons.map(pokemon => [pokemon.id, pokemon])
-        ).values()
+    allPokemonsData = [
+        ...new Map(cachedPokemons.map((pokemon) => [pokemon.id, pokemon])).values()
     ].sort((a, b) => a.id - b.id);
 
-    if (uniquePokemons.length === 0) {
-        container.innerHTML = `
-            <p class="error-msg">
-                No hay conexión a internet y todavía no hay Pokémon guardados.
-                Conéctate a internet para cargar los datos.
-            </p>
-        `;
-
+    if (allPokemonsData.length === 0) {
+        loadingErrorMessage =
+            "No hay conexión a internet y todavía no hay Pokémon guardados. Conéctate para cargar los datos.";
+        container.innerHTML = `<p class="error-msg">${loadingErrorMessage}</p>`;
+        if (resultsCount) resultsCount.textContent = loadingErrorMessage;
         return;
     }
 
-    uniquePokemons.forEach(pokemon => {
-        renderCard(pokemon);
-    });
-
-    if (uniquePokemons.length < TOTAL_POKEMON) {
-        const message = document.createElement('p');
-
-        message.className = 'error-msg';
-        message.textContent =
-            `Modo sin conexión: hay ${uniquePokemons.length} de 151 Pokémon guardados.`;
-
-        container.prepend(message);
-    }
-
-    console.log(
-        `Modo sin conexión: ${uniquePokemons.length} de 151 Pokémon disponibles`
-    );
+    loadingErrorMessage = `Modo sin conexión: hay ${allPokemonsData.length} de 151 Pokémon guardados.`;
+    updateActiveChip();
+    renderFilteredPokemons();
+    console.log(loadingErrorMessage);
 }
 
 
@@ -371,85 +404,77 @@ function loadPokemonsOffline() {
    CREAR TARJETA DEL POKÉMON
 ========================================= */
 
-function renderCard(pokemon) {
-    const card = document.createElement('div');
+function createPokemonCard(pokemon) {
+    const card = document.createElement("article");
+    card.classList.add("card");
+    card.tabIndex = 0;
+    card.setAttribute("role", "link");
+    card.setAttribute("aria-label", `Ver detalles de ${pokemon.name}`);
 
-    card.classList.add('card');
-
-    // Abrir el detalle del Pokémon al hacer clic
-    card.addEventListener('click', () => {
+    const openDetails = () => {
         window.location.href =
             `./javascript/detalle.html?name=${encodeURIComponent(pokemon.name)}`;
+    };
+
+    card.addEventListener("click", openDetails);
+    card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openDetails();
+        }
     });
 
     const capitalizedName =
         pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
 
     const imageSrc =
-        pokemon.sprites?.other?.['official-artwork']?.front_default ||
+        pokemon.sprites?.other?.["official-artwork"]?.front_default ||
         pokemon.sprites?.front_default ||
-        '';
+        "";
 
-    const formattedId =
-        `N.º ${pokemon.id.toString().padStart(4, '0')}`;
+    const formattedId = `N.º ${String(pokemon.id).padStart(4, "0")}`;
 
-    // Generar etiquetas de tipos
-    let typesHTML = '';
-
-    if (pokemon.types) {
-        pokemon.types.forEach(t => {
-            const typeKey = t.type.name;
-            const typeNameEs =
-                typeTranslations[typeKey] || typeKey.toUpperCase();
-
-            typesHTML += `
-                <span class="type-badge ${typeKey}">
-                    ${typeNameEs}
-                </span>
-            `;
-        });
-    }
-
-    card.innerHTML = `
-        <img
-            src="${imageSrc}"
-            alt="${capitalizedName}"
-            class="card-img"
-            loading="lazy"
-        >
-
-        <div class="card-body">
-            <span class="pokemon-id">${formattedId}</span>
-
-            <h3 class="card-title">${capitalizedName}</h3>
-
-            <div class="types-container">
-                ${typesHTML}
-            </div>
-        </div>
-    `;
-
-    // Usar el sprite normal si falla la imagen principal
-    const img = card.querySelector('.card-img');
-
-    img.addEventListener('error', () => {
-        if (img.dataset.fallbackUsed === 'true') {
-            img.style.display = 'none';
-            return;
-        }
-
-        img.dataset.fallbackUsed = 'true';
-
-        const fallback = pokemon.sprites?.front_default || '';
-
-        if (fallback && img.src !== fallback) {
-            img.src = fallback;
+    const cardImage = document.createElement("img");
+    cardImage.src = imageSrc;
+    cardImage.alt = capitalizedName;
+    cardImage.className = "card-img";
+    cardImage.loading = "lazy";
+    cardImage.addEventListener("error", () => {
+        const fallback = pokemon.sprites?.front_default || "";
+        if (fallback && cardImage.src !== fallback && !cardImage.dataset.fallbackUsed) {
+            cardImage.dataset.fallbackUsed = "true";
+            cardImage.src = fallback;
         } else {
-            img.style.display = 'none';
+            cardImage.style.visibility = "hidden";
         }
     });
 
-    container.appendChild(card);
+    const cardBody = document.createElement("div");
+    cardBody.className = "card-body";
+
+    const idLabel = document.createElement("span");
+    idLabel.className = "pokemon-id";
+    idLabel.textContent = formattedId;
+
+    const title = document.createElement("h3");
+    title.className = "card-title";
+    title.textContent = capitalizedName;
+
+    const typesContainer = document.createElement("div");
+    typesContainer.className = "types-container";
+
+    (pokemon.types || []).forEach((item) => {
+        const typeKey = item.type.name;
+        const badge = document.createElement("span");
+        badge.className = `type-badge ${typeKey}`;
+        badge.textContent = typeTranslations[typeKey] || typeKey;
+        typesContainer.appendChild(badge);
+    });
+
+    cardBody.append(idLabel, title, typesContainer);
+    card.append(cardImage, cardBody);
+
+    return card;
 }
 
 
@@ -457,4 +482,4 @@ function renderCard(pokemon) {
    INICIAR LA APLICACIÓN
 ========================================= */
 
-document.addEventListener('DOMContentLoaded', fetchAllPokemons);
+document.addEventListener("DOMContentLoaded", fetchAllPokemons);
